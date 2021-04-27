@@ -38,7 +38,7 @@ class Dijkstra:
 
     def __init__(self, count: int, graph: Graph):
         self._nodes_list = [Node(name) for name in range(1, count + 1)]
-        self._nodes_set = set(self._nodes_list)
+        self._nodes_set = {*self._nodes_list}
         self._nodes_list.insert(0, None)
         self._graph = graph
         self.count = count
@@ -55,7 +55,6 @@ class Dijkstra:
     def find(self, start: int, end: int) -> str:
         startNode = self._nodes_list[start]
         endNode = self._nodes_list[end]
-        # startNode.weight = float('inf')
         self._nodes_set.remove(startNode)
         for node in self._nodes_set:
             weight = self._graph.get(startNode, node)
@@ -64,7 +63,10 @@ class Dijkstra:
                 node.last = startNode
         for _ in range(1, self.count - 1):
             current_node = self._find_min()
-            self._nodes_set.remove(current_node)
+            try:
+                self._nodes_set.remove(current_node)
+            except KeyError:
+                continue
             for node in self._nodes_set:
                 weight = self._graph.get(current_node, node)
                 if not weight:
