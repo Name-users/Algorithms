@@ -52,29 +52,6 @@ class Dijkstra:
                 result = node
         return result
 
-    # def find(self, start: int, end: int):
-    #     startNode = self._nodes_list[start]
-    #     endNode = self._nodes_list[end]
-    #     startNode.weight = float('inf')
-    #     self._nodes_set.remove(startNode)
-    #     for node in self._nodes_set:
-    #         weight = self._graph.get(startNode, node)
-    #         if weight:
-    #             node.weight = weight
-    #             node.last = startNode
-    #     for _ in range(1, self.count - 1):
-    #         current_node = self._find_min()
-    #         self._nodes_set.remove(current_node)
-    #         for node in self._nodes_set:
-    #             if not node.weight:
-    #                 continue
-    #             if max(node.weight, self._graph.get(current_node, node)) > node.weight:
-    #                 node.weight = max(current_node.weight, self._graph.get(current_node, node))
-    #                 node.last = current_node
-    #     node = endNode
-    #     while node:
-    #         print(node.name)
-    #         node = node.last
     def find(self, start: int, end: int) -> str:
         startNode = self._nodes_list[start]
         endNode = self._nodes_list[end]
@@ -118,15 +95,3 @@ if __name__ == '__main__':
         dijkstra = Dijkstra(lines, graph)
     with open('output.txt', 'w') as f:
         f.write(dijkstra.find(start, end))
-    # lines = 4 #int(input())
-    # arr = [
-    #     '0',
-    #     '1 25 3 0 0',
-    #     '1 4 0',
-    #     '3 7 0'
-    # ]
-    # g = Graph(arr)
-    # # g = Graph([input() for _ in range(lines)])
-    # a = 5
-    # d = Dijkstra(lines, g)
-    # d.find(1, 4)
