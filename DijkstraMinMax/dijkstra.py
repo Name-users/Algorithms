@@ -47,7 +47,7 @@ class Dijkstra:
         min_weight = float('inf')
         result: Node = None
         for node in self._nodes_set:
-            if node.weight and node.weight < min_weight:
+            if node.weight and node.weight <= min_weight:
                 min_weight = node.weight
                 result = node
         return result
@@ -69,12 +69,8 @@ class Dijkstra:
                 weight = self._graph.get(current_node, node)
                 if not weight:
                     continue
-                if not node.weight:
-                    node.weight = current_node.weight + weight
-                    node.last = current_node
-                    continue
-                if current_node.weight + self._graph.get(current_node, node) > node.weight:
-                    node.weight = current_node.weight + self._graph.get(current_node, node)
+                if not node.weight or weight > node.weight:
+                    node.weight = weight
                     node.last = current_node
         node = endNode
         if not node.weight:
