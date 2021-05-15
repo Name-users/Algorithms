@@ -5,7 +5,9 @@ class Node:
     def __init__(self, name: int):
         self._name = name
         self.last: Node = None
-        self.weight: float = None
+        self.weight: float = float('inf')
+        self.next: List[Node] = []
+        self.visited: bool = False
 
     @property
     def name(self):
@@ -37,45 +39,56 @@ class Dijkstra:
     _graph: Graph
 
     def __init__(self, count: int, graph: Graph):
-        self._nodes_list = [Node(name) for name in range(1, count + 1)]
-        self._nodes_set = {*self._nodes_list}
-        self._nodes_list.insert(0, None)
+        self._nodes: Dict[int, Node] = {name: Node(name) for name in range(1, count + 1)}
         self._graph = graph
         self.count = count
+        self._add_nodes()
 
-    def _find_min(self) -> Optional[Node]:
-        min_weight = float('inf')
-        result: Node = None
-        for node in self._nodes_set:
-            if node.weight and node.weight <= min_weight:
-                min_weight = node.weight
-                result = node
-        return result
+    def _add_nodes(self):
+        for first in self._nodes.values():
+            for second in self._nodes.values():
+                if self._graph.get(first, second):
+                    first.next.append(second)
+
+    def _find_min(self, nodes: List[Node]) -> Optional[Node]:
+        max_weight = float('inf')
+        n: Node = None
+        for node in nodes:
+            if not node.visited and node.weight <= max_weight:
+                n = node
+                max_weight = node.weight
+        return n
+
+    def _find_max(self, nodes: List[Node]) -> Node:
+        max_weight = float('-inf')
+        n: Node = None
+        for node in nodes:
+            if not node.visited and node.weight > max_weight:
+                n = node
+                max_weight = node.weight
+        return n
 
     def find(self, start: int, end: int) -> str:
-        startNode = self._nodes_list[start]
-        endNode = self._nodes_list[end]
-        self._nodes_set.remove(startNode)
-        for node in self._nodes_set:
+        startNode = self._nodes.get(start)
+        endNode = self._nodes.get(end)
+        for node in startNode.next:
             weight = self._graph.get(startNode, node)
             if weight:
                 node.weight = weight
                 node.last = startNode
-        for _ in range(1, self.count - 1):
-            current_node = self._find_min()
-            try:
-                self._nodes_set.remove(current_node)
-            except KeyError:
+        current_node = startNode
+        while not endNode.visited and current_node:
+            max_node = self._find_min(current_node.next)
+            current_node.visited = True
+            if not max_node:
+                current_node = current_node.last
                 continue
-            for node in self._nodes_set:
-                weight = self._graph.get(current_node, node)
-                if not weight:
-                    continue
-                if not node.weight or weight > node.weight:
-                    node.weight = weight
-                    node.last = current_node
+            if self._graph.get(current_node, max_node) < max_node.weight:
+                max_node.weight = self._graph.get(current_node, max_node)
+                max_node.last = current_node
+            current_node = max_node
         node = endNode
-        if not node.weight:
+        if not node.visited:
             return 'N'
         buffer = []
         while node:
