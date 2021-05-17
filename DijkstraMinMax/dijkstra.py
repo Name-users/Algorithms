@@ -70,6 +70,7 @@ class Dijkstra:
 
     def find(self, start: int, end: int) -> str:
         startNode = self._nodes.get(start)
+        startNode.weight = 0
         endNode = self._nodes.get(end)
         for node in startNode.next:
             weight = self._graph.get(startNode, node)
@@ -91,10 +92,12 @@ class Dijkstra:
         if not node.visited:
             return 'N'
         buffer = []
+        max_value = 0
         while node:
             buffer.append(str(node.name))
+            max_value = max(max_value, node.weight)
             node = node.last
-        return 'Y\n' + ' '.join(buffer[::-1]) + f'\n{endNode.weight}'
+        return 'Y\n' + ' '.join(buffer[::-1]) + f'\n{max_value}'
 
 
 if __name__ == '__main__':
